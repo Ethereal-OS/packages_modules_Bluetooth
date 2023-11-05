@@ -135,6 +135,7 @@ static void sdp_snd_service_search_req(tCONN_CB* p_ccb, uint8_t cont_len,
                                        uint8_t* p_cont) {
   uint8_t *p, *p_start, *p_param_len;
   BT_HDR* p_cmd = (BT_HDR*)osi_malloc(SDP_DATA_BUF_SIZE);
+  uint16_t param_len;
   uint16_t bytes_left = SDP_DATA_BUF_SIZE;
 
   /* Prepare the buffer for sending the packet to L2CAP */
@@ -478,7 +479,6 @@ static void process_service_attr_rsp(tCONN_CB* p_ccb, uint8_t* p_reply,
   if (p_ccb->cur_handle < p_ccb->num_handles) {
     BT_HDR* p_msg = (BT_HDR*)osi_malloc(SDP_DATA_BUF_SIZE);
     uint8_t* p;
-    uint16_t bytes_left = SDP_DATA_BUF_SIZE;
 
     p_msg->offset = L2CAP_MIN_OFFSET;
     p = p_start = (uint8_t*)(p_msg + 1) + L2CAP_MIN_OFFSET;
@@ -594,7 +594,7 @@ static void process_service_search_attr_rsp(tCONN_CB* p_ccb, uint8_t* p_reply,
   if ((cont_request_needed) || (!p_reply)) {
     BT_HDR* p_msg = (BT_HDR*)osi_malloc(SDP_DATA_BUF_SIZE);
     uint8_t* p;
-
+    uint16_t bytes_left = SDP_DATA_BUF_SIZE;
     p_msg->offset = L2CAP_MIN_OFFSET;
     p = p_start = (uint8_t*)(p_msg + 1) + L2CAP_MIN_OFFSET;
 
@@ -606,7 +606,7 @@ static void process_service_search_attr_rsp(tCONN_CB* p_ccb, uint8_t* p_reply,
     /* Skip the length, we need to add it at the end */
     p_param_len = p;
     p += 2;
-s
+    
     /* Account for header size, max service record count and
      * continuation state */
     const uint16_t base_bytes = (sizeof(BT_HDR) + L2CAP_MIN_OFFSET +
