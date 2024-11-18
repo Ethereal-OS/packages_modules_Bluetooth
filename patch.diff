@@ -1,0 +1,99 @@
+diff --git a/android/app/src/com/android/bluetooth/Utils.java b/android/app/src/com/android/bluetooth/Utils.java
+index 2f0fb5f..fd7a15a 100644
+--- a/android/app/src/com/android/bluetooth/Utils.java
++++ b/android/app/src/com/android/bluetooth/Utils.java
+@@ -534,10 +534,10 @@
+         }
+         // STOPSHIP(b/188391719): enable this security enforcement
+         // attributionSource.enforceCallingUid();
+-        AttributionSource currentAttribution = new AttributionSource
+-                .Builder(context.getAttributionSource())
+-                .setNext(attributionSource)
+-                .build();
++        AttributionSource currentAttribution =
++                new AttributionSource.Builder(context.getAttributionSource())
++                        .setNext(Objects.requireNonNull(attributionSource))
++                        .build();
+         PermissionManager pm = context.getSystemService(PermissionManager.class);
+         if (pm == null) {
+             return false;
+@@ -809,10 +809,10 @@
+             Log.e(TAG, "Permission denial: Location is off.");
+             return false;
+         }
+-        AttributionSource currentAttribution = new AttributionSource
+-                .Builder(context.getAttributionSource())
+-                .setNext(attributionSource)
+-                .build();
++        AttributionSource currentAttribution =
++                new AttributionSource.Builder(context.getAttributionSource())
++                        .setNext(Objects.requireNonNull(attributionSource))
++                        .build();
+         // STOPSHIP(b/188391719): enable this security enforcement
+         // attributionSource.enforceCallingUid();
+         PermissionManager pm = context.getSystemService(PermissionManager.class);
+@@ -843,10 +843,10 @@
+             return false;
+         }
+ 
+-        final AttributionSource currentAttribution = new AttributionSource
+-                .Builder(context.getAttributionSource())
+-                .setNext(attributionSource)
+-                .build();
++        final AttributionSource currentAttribution =
++                new AttributionSource.Builder(context.getAttributionSource())
++                        .setNext(Objects.requireNonNull(attributionSource))
++                        .build();
+         // STOPSHIP(b/188391719): enable this security enforcement
+         // attributionSource.enforceCallingUid();
+         PermissionManager pm = context.getSystemService(PermissionManager.class);
+@@ -881,10 +881,10 @@
+             return false;
+         }
+ 
+-        AttributionSource currentAttribution = new AttributionSource
+-                .Builder(context.getAttributionSource())
+-                .setNext(attributionSource)
+-                .build();
++        AttributionSource currentAttribution =
++                new AttributionSource.Builder(context.getAttributionSource())
++                        .setNext(Objects.requireNonNull(attributionSource))
++                        .build();
+         // STOPSHIP(b/188391719): enable this security enforcement
+         // attributionSource.enforceCallingUid();
+         PermissionManager pm = context.getSystemService(PermissionManager.class);
+diff --git a/android/app/tests/unit/src/com/android/bluetooth/UtilsTest.java b/android/app/tests/unit/src/com/android/bluetooth/UtilsTest.java
+index 20e830c..0a2fef3 100644
+--- a/android/app/tests/unit/src/com/android/bluetooth/UtilsTest.java
++++ b/android/app/tests/unit/src/com/android/bluetooth/UtilsTest.java
+@@ -119,10 +119,12 @@
+         boolean enabledStatus = locationManager.isLocationEnabledForUser(userHandle);
+ 
+         locationManager.setLocationEnabledForUser(false, userHandle);
+-        assertThat(Utils.checkCallerHasCoarseLocation(context, null, userHandle)).isFalse();
++        assertThat(Utils.checkCallerHasCoarseLocation(
++                       context, context.getAttributionSource(), userHandle))
++                .isFalse();
+ 
+         locationManager.setLocationEnabledForUser(true, userHandle);
+-        Utils.checkCallerHasCoarseLocation(context, null, userHandle);
++        Utils.checkCallerHasCoarseLocation(context, context.getAttributionSource(), userHandle);
+         if (!enabledStatus) {
+             locationManager.setLocationEnabledForUser(false, userHandle);
+         }
+@@ -136,10 +138,13 @@
+         boolean enabledStatus = locationManager.isLocationEnabledForUser(userHandle);
+ 
+         locationManager.setLocationEnabledForUser(false, userHandle);
+-        assertThat(Utils.checkCallerHasCoarseOrFineLocation(context, null, userHandle)).isFalse();
++        assertThat(Utils.checkCallerHasCoarseOrFineLocation(
++                       context, context.getAttributionSource(), userHandle))
++                .isFalse();
+ 
+         locationManager.setLocationEnabledForUser(true, userHandle);
+-        Utils.checkCallerHasCoarseOrFineLocation(context, null, userHandle);
++        Utils.checkCallerHasCoarseOrFineLocation(
++                context, context.getAttributionSource(), userHandle);
+         if (!enabledStatus) {
+             locationManager.setLocationEnabledForUser(false, userHandle);
+         }
